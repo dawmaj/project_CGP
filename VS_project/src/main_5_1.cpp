@@ -87,7 +87,7 @@ float cameraAngle = 0;
 glm::vec3 cameraPos = glm::vec3(-5, 0, 0);
 glm::vec3 cameraDir;
 float roll = 0;
-float pitch = 0;
+float pitch = 0.25;
 float yaw = 0;
 
 glm::mat4 cameraMatrix, perspectiveMatrix;
@@ -122,7 +122,7 @@ glm::mat4 createCameraMatrix()
 	cameraDir = glm::vec3(cosf(cameraAngle), 0.0f, sinf(cameraAngle));
 	glm::vec3 up = glm::vec3(0,1,0);
 
-	return Core::createViewMatrix(roll, pitch, yaw);
+	return Core::createViewMatrix(cameraDir,roll, pitch, yaw);
 }
 
 //draw things without texture
@@ -164,8 +164,8 @@ void drawObjectTexture(obj::Model * model, glm::mat4 modelMatrix, GLuint id)
 //rendar all planets
 void renderPlanets()
 {
-	y_rotation_angle += 0.001;
-	around_rotation_angle += 0.0001;
+	y_rotation_angle += 0.001f;
+	around_rotation_angle += 0.0001f;
 
 	glm::vec3 myRotationAxis(0.0f, 1.0f, 0.0f);
 	//Sun
@@ -330,6 +330,7 @@ int main(int argc, char ** argv)
 	glewInit();
 
 	init();
+
 	glutKeyboardFunc(keyboard);
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(idle);

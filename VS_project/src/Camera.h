@@ -10,5 +10,5 @@ namespace Core
 	// forward - wektor "do przodu" kamery (jednostkowy)
 	// up - wektor "w gore" kamery (jednostkowy)
 	// up i forward musza byc ortogonalne!
-	glm::mat4 createViewMatrix(float roll, float pitch, float yaw);
+	glm::mat4 createViewMatrix(glm::vec3 position, float yaw, float pitch, float roll);
 }

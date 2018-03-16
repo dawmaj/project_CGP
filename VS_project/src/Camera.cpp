@@ -19,24 +19,42 @@ glm::mat4 Core::createPerspectiveMatrix(float zNear, float zFar)
 	return perspective;
 }
 
-glm::mat4 Core::createViewMatrix(float roll, float pitch, float yaw)
+//glm::mat4 Core::createViewMatrix( glm::vec3 position, glm::vec3 forward, glm::vec3 up )
+//{
+//	glm::vec3 side = glm::cross(forward, up);
+//
+//	// Trzeba pamietac o minusie przy ustawianiu osi Z kamery.
+//	// Wynika to z tego, ze standardowa macierz perspektywiczna zaklada, ze "z przodu" jest ujemna (a nie dodatnia) czesc osi Z.
+//	glm::mat4 cameraRotation;
+//	cameraRotation[0][0] = side.x; cameraRotation[1][0] = side.y; cameraRotation[2][0] = side.z;
+//	cameraRotation[0][1] = up.x; cameraRotation[1][1] = up.y; cameraRotation[2][1] = up.z;
+//	cameraRotation[0][2] = -forward.x; cameraRotation[1][2] = -forward.y; cameraRotation[2][2] = -forward.z;
+//
+//	glm::mat4 cameraTranslation;
+//	cameraTranslation[3] = glm::vec4(-position, 1.0f);
+//
+//	return cameraRotation * cameraTranslation;
+//}
+
+glm::mat4 Core::createViewMatrix(glm::vec3 position, float yaw, float pitch, float roll)
 {
-	//glm::vec3 side = glm::cross(forward, up);
-	// Trzeba pamietac o minusie przy ustawianiu osi Z kamery.
-	// Wynika to z tego, ze standardowa macierz perspektywiczna zaklada, ze "z przodu" jest ujemna (a nie dodatnia) czesc osi Z.
-	glm::mat4 cameraRotation;
-	glm::mat4 matRoll;
-	glm::mat4 Rx = glm::rotate(matRoll, roll, glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 Ry = glm::rotate(matRoll, pitch, glm::vec3(0.0f, 0.0f, 1.0f));
-	glm::mat4 Rz = glm::rotate(matRoll,yaw,glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 Rx, Ry, Rz, M, T;
+	glm::mat4 Id = glm::mat4();
 
+	glm::quat qPitch = glm::angleAxis(pitch, glm::vec3(1, 0, 0));
+	glm::quat qYaw = glm::angleAxis(yaw, glm::vec3(0, 1, 0));
+	glm::quat qRoll = glm::angleAxis(roll, glm::vec3(0, 0, 1));
 
-	/*cameraRotation[0][0] = side.x; cameraRotation[1][0] = side.y; cameraRotation[2][0] = side.z;
-	cameraRotation[0][1] = up.x; cameraRotation[1][1] = up.y; cameraRotation[2][1] = up.z;
-	cameraRotation[0][2] = -forward.x; cameraRotation[1][2] = -forward.y; cameraRotation[2][2] = -forward.z;*/
+	glm::quat rotQuat = qYaw * qPitch * qRoll;
 
-	glm::mat4 cameraTranslation;
-	//cameraTranslation[3] = glm::vec4(-position, 1.0f);
+	glm::mat4 RotMatrix = glm::mat4_cast(rotQuat);
 
-	return Rx * Ry * Rz * cameraTranslation;
+	//Rx = glm::rotate(Id, roll, glm::vec3(0.0f, 0.0f, 1.0f));
+	//Ry = glm::rotate(Id, pitch, glm::vec3(0.0f, 1.0f, 0.0f));
+	//Rz = glm::rotate(Id, yaw, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	T = glm::translate(Id, position);
+	M = RotMatrix * T;
+
+	return M;
 }
